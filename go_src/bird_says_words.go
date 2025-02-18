@@ -23,7 +23,7 @@ type Config struct {
 
 type BirdWord struct {
 	Img  string `json:"img"`
-	Text string `json:"text"`
+	Text string `json:"fun_fact"`
 }
 
 type MessageTracker struct {
