@@ -121,11 +121,13 @@ func sendBirdMessage(client *twilio.RestClient, phoneNumber string, birdName str
 }
 
 func main() {
+	// this file must exist
 	config, err := loadConfig("config.toml")
 	if err != nil {
 		log.Fatalf("Error reading config.toml: %v", err)
 	}
 
+	// this file must exist too
 	birdDb, err := loadBirdDB("bird_db.json")
 	if err != nil {
 		log.Fatalf("Error reading bird_db.json: %v", err)
