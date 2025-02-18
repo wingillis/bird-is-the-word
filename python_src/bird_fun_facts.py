@@ -4,7 +4,6 @@ import json
 import ollama
 import random
 import requests
-from pathlib import Path
 from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
 from fake_useragent import UserAgent
@@ -141,7 +140,7 @@ def main():
                     )
                     bird_db[name] = {
                         "img_url": _bird_db[name],
-                        "fun_fact": response["message"]["content"],
+                        "fun_fact": response.message.content,
                     }
             # Check for kids pages
             elif any("kids" in url["url"] for url in results):
@@ -153,7 +152,7 @@ def main():
                     )
                     bird_db[name] = {
                         "img_url": _bird_db[name],
-                        "fun_fact": response["message"]["content"],
+                        "fun_fact": response.message.content,
                     }
             # Fall back to top 3 results
             else:
@@ -174,7 +173,7 @@ def main():
                     )
                     bird_db[name] = {
                         "img_url": _bird_db[name],
-                        "fun_fact": response["message"]["content"],
+                        "fun_fact": response.message.content,
                     }
         except OSError as e:
             print(f"Error processing {name}: {e}")

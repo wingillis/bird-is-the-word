@@ -1,7 +1,7 @@
 import enum
 import json
 import ollama
-from toolz import valfilter 
+from toolz import valfilter, keyfilter
 from pydantic import BaseModel
 
 class Labels(str, enum.Enum):
@@ -42,7 +42,7 @@ fact_classification = load_fact_classifier_db(fact_model)
 
 system_txt = (
     "Classify the text supplied by the user as a fun bird fact written with humor "
-    "or not by replying yes for a fun bird fact or no for something else. Here are examples "
+    "or not by replying \"yes\" for a fun bird fact or \"no\" for something else. Here are examples "
     "to classify as \"no\": lists of bird species, a story about someone's "
     "vacation, bullet points (- Bird: ..., - Fact: ...), gibberish."
 )
@@ -67,3 +67,9 @@ for bird in filter(lambda x: x not in fact_classification, within_length):
     except Exception as e:
         print(e)
         continue
+
+# filter the fun facts
+filtered_bird_db = keyfilter(lambda x: fact_classification[x], bird_db)
+
+with open(f"filtered_bird_db_{fact_model.replace(':', '-')}.json", "w") as f:
+    json.dump(filtered_bird_db, f, indent=2)
