@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.3",
+    "fake-useragent>=2.0.3",
     "ollama>=0.4.7",
     "requests>=2.32.3",
+    "toolz>=1.0.0",
     "tqdm>=4.67.1",
 ]

@@ -27,7 +27,8 @@ def load_fact_classifier_db(model):
 
 
 # fact_model = "granite3.1-dense:latest"
-fact_model = "mistral-small:latest"
+fact_model = "tulu3:latest"
+# fact_model = "mistral-small:latest"
 classification_model = "mistral-small:latest"
 
 bird_db = load_bird_db(fact_model)
@@ -37,13 +38,13 @@ within_length = valfilter(lambda x: len(x["fun_fact"]) < 1500, bird_db)
 print(f"Total number of fun facts: {len(bird_db)}")
 print(f"Number of fun facts within length: {len(within_length)}")
 
-fact_classification = load_fact_classifier_db(classification_model)
+fact_classification = load_fact_classifier_db(fact_model)
 
 system_txt = (
     "Classify the text supplied by the user as a fun bird fact written with humor "
-    "or not by replying yes for a fun bird fact or no for something else. Examples "
-    "of not fun bird facts are: lists of bird species, a story about someone's "
-    "vacation, or gibberish."
+    "or not by replying yes for a fun bird fact or no for something else. Here are examples "
+    "to classify as \"no\": lists of bird species, a story about someone's "
+    "vacation, bullet points (- Bird: ..., - Fact: ...), gibberish."
 )
 
 # classify if fun fact, store results in a dict
@@ -61,7 +62,7 @@ for bird in filter(lambda x: x not in fact_classification, within_length):
         )
         val = Classification.model_validate_json(response.message.content)
         fact_classification[bird] = val.label == Labels.yes
-        with open(f"fact_classification_{classification_model.replace(':', '-')}.json", "w") as f:
+        with open(f"fact_classification_{fact_model.replace(':', '-')}.json", "w") as f:
             json.dump(fact_classification, f, indent=2)
     except Exception as e:
         print(e)

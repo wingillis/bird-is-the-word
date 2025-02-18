@@ -45,12 +45,11 @@ def get_existing_fun_facts(model: str) -> dict[str, dict]:
     }
     """
     fname = f"bird_fact_db_{model.replace(':', '-')}.json"
-    if Path(fname).exists():
+    try:
         with open(fname, "r") as f:
-            bird_db = json.load(f)
-    else:
-        bird_db = {}
-    return bird_db
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
 
 def has_fun_fact(key, bird_db):
@@ -80,7 +79,7 @@ def generate_fun_fact(model_name, key, text, sys_role, ctx_size):
                 "content": content_format,
             },
         ],
-        options={"num_ctx": ctx_size, "temperature": 0.5},
+        options={"num_ctx": ctx_size, "temperature": 0.4},
     )
 
 
@@ -99,15 +98,16 @@ def main():
 
     # Setup parameters
     # model_name = "llama3.2:3b-instruct-q8_0"
-    model_name = "mistral-small:latest"
+    # model_name = "mistral-small:latest"
     # model_name = "granite3.1-dense:latest"
+    model_name = "tulu3:latest"
     ua, base_url, params = setup_search_params()
     ctx_size = 20_000
 
     # Setup system role for LLM
     sys_role = {
         "role": "system",
-        "content": "You are a whacky and zany bird expert. Use the text I provide you to tell me one unique and fun fact about this bird species. The text is between xml tags like <text></text>. The text may be disorganized and can come from multiple different websites. Make sure to try to use puns if possible. Your love of birds is so strong that your bird-loving personality easily comes through in your response.",
+        "content": "You are a whacky and zany bird expert. Use the text I provide you to tell me one unique and fun fact about this bird species. The text is between xml tags like <text></text>. The text may be disorganized and can come from multiple different websites. Make sure to try to use puns if possible. Your love of birds is so strong that your bird-loving personality easily comes through in your response. Don't start your response with an affirmation, like 'Sure thing!' or 'Absolutely!'",
     }
 
     # Get existing fun facts
