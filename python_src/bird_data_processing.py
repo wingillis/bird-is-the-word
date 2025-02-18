@@ -1,3 +1,6 @@
+"""
+Create a JSON database of bird species where the key is a bird name, and the value is an image URL.
+"""
 import time
 import json
 import random
@@ -55,15 +58,16 @@ def main():
         name = bird.text.split('\n')[1]
         bird_db[name] = base_url + href
 
-    # Load or create image database
+    # Load or create image url database
     if Path('bird_db_v2.json').exists():
         with open('bird_db_v2.json', 'r') as f:
             bird_db_images = json.load(f)
     else:
         bird_db_images = {}
 
-    # Download images
     keys = list(bird_db)
+
+    # spice things up
     random.shuffle(keys)
 
     # get image urls for any missing birds
@@ -80,7 +84,7 @@ def main():
         except Exception as e:
             print(f"Error processing {key}: {e}")
         finally:
-            time.sleep(1)  # Rate limiting
+            time.sleep(0.5)  # Rate limiting
 
 if __name__ == "__main__":
     main()
