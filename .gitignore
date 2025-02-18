@@ -1,3 +1,13 @@
 fun_facts/
 images/
 config.toml
+
+*.json
+
+bird_says_words
+bird_says_words_arm64
+
+assets
+
+*.pyc
+__pycache__/

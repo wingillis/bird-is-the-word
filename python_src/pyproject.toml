@@ -1,0 +1,13 @@
+[project]
+name = "python-src"
+version = "0.1.0"
+description = "Extracts bird species names and images and processes bird facts with an LLM"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.3",
+    "fake-useragent>=2.0.3",
+    "ollama>=0.4.7",
+    "requests>=2.32.3",
+    "toolz>=1.0.0",
+    "tqdm>=4.67.1",
+]
