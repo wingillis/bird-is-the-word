@@ -8,6 +8,7 @@ import requests
 from pathlib import Path
 from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
+from fake_useragent import UserAgent
 
 def has_sci(link):
     """Check if link contains a scientific name. Specific to this website."""
@@ -19,7 +20,7 @@ def has_sci(link):
 
 def get_bird_image_url(url, bird_name):
     """Get bird image URL for database."""
-    response = requests.get(url, timeout=2)
+    response = requests.get(url, timeout=1, headers={"User-Agent": UserAgent().random})
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         imgs = soup.find_all('img')
@@ -33,7 +34,7 @@ def get_bird_image_url(url, bird_name):
 def main():
     # Scrape bird links
     url = "https://birdsoftheworld.org/bow/specieslist"
-    response = requests.get(url)
+    response = requests.get(url, timeout=5, headers={"User-Agent": UserAgent().random})
 
     if response.status_code != 200:
         print("Failed to fetch bird list")
