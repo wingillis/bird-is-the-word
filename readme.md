@@ -32,12 +32,12 @@ Once `searxng` is running, navigate to the newly made `searxng` folder, and modi
 
 ```toml
 search:
-  formats:
-    - html
-    - json  # add
+    formats:
+        - html
+        - json  # add
 server:
-  port: 8080  # add
-  bind_address: "0.0.0.0"  # add
+    port: 8080  # add
+    bind_address: "0.0.0.0"  # add
 ```
 
 Then restart the `searxng` container to be sure it has read the updates to the settings file.
