@@ -30,7 +30,7 @@ I [included](./docker-compose.yaml) the `compose` build script in the repo for t
 
 Once `searxng` is running, navigate to the newly made `searxng` folder, and modify the `settings.yml` file in the following way:
 
-```toml
+```yaml
 search:
     formats:
         - html
