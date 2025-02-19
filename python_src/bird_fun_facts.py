@@ -11,7 +11,7 @@ from fake_useragent import UserAgent
 
 def load_bird_database():
     """Load the bird img database from json file."""
-    with open("bird_db_v2.json", "r") as f:
+    with open("bird_db.json", "r") as f:
         return json.load(f)
 
 

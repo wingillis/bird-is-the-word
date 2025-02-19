@@ -60,8 +60,8 @@ def main():
         bird_db[name] = base_url + href
 
     # Load or create image url database
-    if Path('bird_db_v2.json').exists():
-        with open('bird_db_v2.json', 'r') as f:
+    if Path('bird_db.json').exists():
+        with open('bird_db.json', 'r') as f:
             bird_db_images = json.load(f)
     else:
         bird_db_images = {}
@@ -79,7 +79,7 @@ def main():
                 continue
             bird_db_images[key] = img_url
 
-            with open('bird_db_v2.json', 'w') as f:
+            with open('bird_db.json', 'w') as f:
                 json.dump(bird_db_images, f, indent=2)
 
         except Exception as e:
