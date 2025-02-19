@@ -34,6 +34,7 @@ classification_model = "mistral-small:latest"
 
 bird_db = load_bird_db(fact_model)
 
+# twilio character limit is 1600 characters, so this is a safe threshold
 within_length = valfilter(lambda x: len(x["fun_fact"]) < 1500, bird_db)
 
 print(f"Total number of fun facts: {len(bird_db)}")
