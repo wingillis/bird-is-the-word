@@ -64,6 +64,8 @@ My favorite models are:
 
 ## Installation and setup - Go
 
+In order to use this feature, you need to have a Twilio account, and have bought and registered a phone number.
+
 Download the version of Go that you want to use, and run `go build go_src/bird_says_words.go` in the project folder to create the program.
 
 It expects a `config.toml` file to be located in the project folder that contains: 1) the API key for a Twilio account, and 2) the phone numbers you want to send bird facts to.
