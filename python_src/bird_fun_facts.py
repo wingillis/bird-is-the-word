@@ -6,13 +6,14 @@ import random
 import requests
 from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
+from toolz import valfilter
 from fake_useragent import UserAgent
 
 
 def load_bird_database():
     """Load the bird img database from json file."""
     with open("bird_db.json", "r") as f:
-        return json.load(f)
+        return valfilter(bool, json.load(f))
 
 
 def setup_search_params():

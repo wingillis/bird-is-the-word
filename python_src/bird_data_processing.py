@@ -67,16 +67,16 @@ def main():
         bird_db_images = {}
 
     keys = list(bird_db)
+    new_keys = list(set(keys) - set(bird_db_images))
+    print(f"Don't have image URLS for {len(new_keys)} species")
 
     # spice things up
-    random.shuffle(keys)
+    random.shuffle(new_keys)
 
     # get image urls for any missing birds
-    for key in filter(lambda k: k not in bird_db_images, tqdm(keys, desc="Gathering image links")):
+    for key in tqdm(new_keys, desc="Gathering image links"):
         try:
             img_url = get_bird_image_url(bird_db[key], key)
-            if img_url is None:
-                continue
             bird_db_images[key] = img_url
 
             with open('bird_db.json', 'w') as f:
