@@ -113,7 +113,7 @@ def main():
     bird_db = get_existing_fun_facts(model_name)
 
     # Process each bird
-    for name in filter(lambda k: k not in bird_db, tqdm(bird_names)):
+    for name in filter(lambda k: k not in bird_db, tqdm(bird_names, desc="Gathering fun facts")):
         try:
             # Setup search query
             query = f'Fun facts about bird species "{name}"'

@@ -20,7 +20,7 @@ def has_sci(link):
 
 def get_bird_image_url(url, bird_name):
     """Get bird image URL for database."""
-    response = requests.get(url, timeout=1, headers={"User-Agent": UserAgent().random})
+    response = requests.get(url, timeout=3, headers={"User-Agent": UserAgent().random})
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         imgs = soup.find_all('img')
@@ -72,7 +72,7 @@ def main():
     random.shuffle(keys)
 
     # get image urls for any missing birds
-    for key in filter(lambda k: k not in bird_db_images, tqdm(keys)):
+    for key in filter(lambda k: k not in bird_db_images, tqdm(keys, desc="Gathering image links")):
         try:
             img_url = get_bird_image_url(bird_db[key], key)
             if img_url is None:

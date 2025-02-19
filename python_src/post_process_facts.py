@@ -1,8 +1,9 @@
 import enum
 import json
 import ollama
-from toolz import valfilter, keyfilter
+from tqdm.auto import tqdm
 from pydantic import BaseModel
+from toolz import valfilter, keyfilter
 
 class Labels(str, enum.Enum):
     yes = "yes"
@@ -48,7 +49,7 @@ system_txt = (
 )
 
 # classify if fun fact, store results in a dict
-for bird in filter(lambda x: x not in fact_classification, within_length):
+for bird in filter(lambda x: x not in fact_classification, tqdm(within_length, desc="Classifying fun facts")):
     try:
         text = bird_db[bird]['fun_fact']
         response = ollama.chat(
@@ -69,7 +70,7 @@ for bird in filter(lambda x: x not in fact_classification, within_length):
         continue
 
 # filter the fun facts
-filtered_bird_db = keyfilter(lambda x: fact_classification[x], bird_db)
+filtered_bird_db = keyfilter(lambda x: fact_classification.get(x, False), bird_db)
 
 with open(f"filtered_bird_db_{fact_model.replace(':', '-')}.json", "w") as f:
     json.dump(filtered_bird_db, f, indent=2)
