@@ -94,7 +94,6 @@ def main():
     # Load bird database and setup
     _bird_db = load_bird_database()
     bird_names = list(_bird_db)
-    random.shuffle(bird_names)
 
     # Setup parameters
     # model_name = "llama3.2:3b-instruct-q8_0"
@@ -113,8 +112,13 @@ def main():
     # Get existing fun facts
     bird_db = get_existing_fun_facts(model_name)
 
+    names_without_facts = list(set(bird_names) - set(bird_db))
+    random.shuffle(names_without_facts)
+
+    print(f"Species with facts: {len(bird_db)}; species without facts: {len(names_without_facts)}")
+
     # Process each bird
-    for name in filter(lambda k: k not in bird_db, tqdm(bird_names, desc="Gathering fun facts")):
+    for name in tqdm(names_without_facts, desc="Gathering fun facts"):
         try:
             # Setup search query
             query = f'Fun facts about bird species "{name}"'
