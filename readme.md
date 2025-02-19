@@ -1,4 +1,4 @@
-# Bird's the word
+# Bird's the word 🦜
 
 A repository of fun bird facts presented in a funny, and digestible way.
 
@@ -79,3 +79,6 @@ sid="SID"
 auth="AUTH"
 ```
 
+## Notes
+
+I included the base [bird_db.json](./python_src/bird_db.json) file so that people who try using this project don't overwhelm the [birdsoftheworld.org](https://birdsoftheworld.org/bow/home) servers with image URL requests.
