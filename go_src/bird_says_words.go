@@ -22,7 +22,7 @@ type Config struct {
 }
 
 type BirdWord struct {
-	Img  string `json:"img"`
+	Img  string `json:"img_url"`
 	Text string `json:"fun_fact"`
 }
 
@@ -31,10 +31,17 @@ type MessageTracker struct {
 	path  string
 }
 
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return fallback
+}
+
 func (mt *MessageTracker) save() error {
 	data, err := json.Marshal(mt.Index)
 	if err != nil {
-		return fmt.Errorf("Error marshalling message index: %w", err)
+		return fmt.Errorf("error marshalling message index: %w", err)
 	}
 	return os.WriteFile(mt.path, data, 0644)
 }
@@ -47,12 +54,12 @@ func NewMessageTracker(path string) (*MessageTracker, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return nil, fmt.Errorf("Error reading message index: %w", err)
+			return nil, fmt.Errorf("error reading message index: %w", err)
 		}
 		return mt, mt.save() // save file if it doesn't exist
 	}
 	if err := json.Unmarshal(data, &mt.Index); err != nil {
-		return nil, fmt.Errorf("Error parsing message index: %w", err)
+		return nil, fmt.Errorf("error parsing message index: %w", err)
 	}
 	return mt, nil
 }
@@ -68,12 +75,12 @@ func loadConfig(path string) (*Config, error) {
 func loadBirdDB(path string) (map[string]BirdWord, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("Error reading bird_db.json: %w", err)
+		return nil, fmt.Errorf("error reading bird_db.json: %w", err)
 	}
 
 	var birdDb map[string]BirdWord
 	if err := json.Unmarshal(data, &birdDb); err != nil {
-		return nil, fmt.Errorf("Error parsing bird_db.json: %w", err)
+		return nil, fmt.Errorf("error parsing bird_db.json: %w", err)
 	}
 	return birdDb, nil
 }
@@ -122,13 +129,15 @@ func sendBirdMessage(client *twilio.RestClient, phoneNumber string, birdName str
 
 func main() {
 	// this file must exist
-	config, err := loadConfig("config.toml")
+	config_path := getEnv("BIRD_CONFIG_PATH", "config.toml")
+	config, err := loadConfig(config_path)
 	if err != nil {
 		log.Fatalf("Error reading config.toml: %v", err)
 	}
 
 	// this file must exist too
-	birdDb, err := loadBirdDB("bird_db.json")
+	bird_db_path := getEnv("BIRD_DB_PATH", "bird_db.json")
+	birdDb, err := loadBirdDB(bird_db_path)
 	if err != nil {
 		log.Fatalf("Error reading bird_db.json: %v", err)
 	}
