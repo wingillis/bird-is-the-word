@@ -87,5 +87,9 @@ def main():
         finally:
             time.sleep(0.5)  # Rate limiting
 
+    bird_db_links = {key: bird_db[key] for key in bird_db_images}
+    with open('bird_db_links.json', 'w') as f:
+        json.dump(bird_db_links, f, indent=2)
+
 if __name__ == "__main__":
     main()

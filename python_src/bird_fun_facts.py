@@ -11,7 +11,7 @@ from fake_useragent import UserAgent
 
 
 def load_bird_database():
-    """Load the bird img database from json file."""
+    """Load the bird img database from json file. Filter out species with empty values."""
     with open("bird_db.json", "r") as f:
         return valfilter(bool, json.load(f))
 
@@ -29,9 +29,9 @@ def setup_search_params():
     return ua, base_url, params
 
 
-def get_existing_fun_facts(model: str) -> dict[str, dict]:
-    """Get list of birds that already have fun facts.
-    Example:
+def get_existing_fun_facts(model: str) -> dict[str, dict] | dict:
+    """Load the existing fun facts database from a file. If doesn't exist, return empty dict.
+    Example dict structure:
     {
         "Robin": {
             "img_url": "https://birdsoftheworld.org/bow/species/amecro/cur/images/amecro_0001_480x360.jpg",
@@ -95,13 +95,14 @@ def main():
     _bird_db = load_bird_database()
     bird_names = list(_bird_db)
 
-    # Setup parameters
+    # Define LLM model name; set up parameters
     # model_name = "llama3.2:3b-instruct-q8_0"
     # model_name = "mistral-small:latest"
     # model_name = "granite3.1-dense:latest"
     model_name = "tulu3:latest"
-    ua, base_url, params = setup_search_params()
     ctx_size = 20_000
+
+    ua, base_url, params = setup_search_params()
 
     # Setup system role for LLM
     sys_role = {
@@ -111,6 +112,10 @@ def main():
 
     # Get existing fun facts
     bird_db = get_existing_fun_facts(model_name)
+
+    # get page link to each species
+    with open("bird_db_links.json", "r") as f:
+        bird_db_links = json.load(f)
 
     names_without_facts = list(set(bird_names) - set(bird_db))
     random.shuffle(names_without_facts)
@@ -128,7 +133,7 @@ def main():
             if response.status_code != 200:
                 print("Fail")
                 print(response)
-                time.sleep(20)
+                time.sleep(10)
                 continue
 
             results = response.json()["results"]
@@ -146,6 +151,7 @@ def main():
                     bird_db[name] = {
                         "img_url": _bird_db[name],
                         "fun_fact": response.message.content,
+                        "species_page": bird_db_links[name],
                     }
             # Check for kids pages
             elif any("kids" in url["url"] for url in results):
@@ -158,6 +164,7 @@ def main():
                     bird_db[name] = {
                         "img_url": _bird_db[name],
                         "fun_fact": response.message.content,
+                        "species_page": bird_db_links[name],
                     }
             # Fall back to top 3 results
             else:
@@ -179,6 +186,7 @@ def main():
                     bird_db[name] = {
                         "img_url": _bird_db[name],
                         "fun_fact": response.message.content,
+                        "species_page": bird_db_links[name],
                     }
         except OSError as e:
             print(f"Error processing {name}: {e}")
