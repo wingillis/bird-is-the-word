@@ -1,8 +1,7 @@
 [project]
 name = "python-src"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Extracts bird species names and images and processes bird facts with an LLM"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.3",
