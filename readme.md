@@ -84,3 +84,5 @@ auth="AUTH"
 ## Notes
 
 I included the base [bird_db.json](./python_src/bird_db.json) file so that people who try using this project don't overwhelm the [birdsoftheworld.org](https://birdsoftheworld.org/bow/home) servers with image URL requests.
+
+I have not double-checked the accuracy of the species facts this project generates. I do know that sometimes it mixes up the species it is talking about.
