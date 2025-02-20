@@ -24,6 +24,7 @@ type Config struct {
 type BirdWord struct {
 	Img  string `json:"img_url"`
 	Text string `json:"fun_fact"`
+	Url  string `json:"species_page"`
 }
 
 type MessageTracker struct {
@@ -120,7 +121,7 @@ func sendBirdMessage(client *twilio.RestClient, phoneNumber string, birdName str
 	params := &twilioApi.CreateMessageParams{}
 	params.SetTo(phoneNumber)
 	params.SetFrom("+18788812473") // twilio number
-	params.SetBody(fmt.Sprintf("%s: %s", birdName, birdWord.Text))
+	params.SetBody(fmt.Sprintf("%s: %s\n%s", birdName, birdWord.Text, birdWord.Url))
 	params.SetMediaUrl([]string{birdWord.Img})
 
 	_, err := client.Api.CreateMessage(params)
