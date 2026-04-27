@@ -5,12 +5,10 @@ This is an alternative to the search/Ollama pipeline in bird_fun_facts.py. It re
 the existing bird image/link databases, asks `pi` for one verified species fact per
 bird, and stores the result in the same shape consumed by the Go sender.
 """
-
-from __future__ import annotations
-
 import argparse
 import json
 import random
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -24,6 +22,8 @@ DEFAULT_BIRD_DB_PATH = SCRIPT_DIR / "bird_db.json"
 DEFAULT_BIRD_LINKS_PATH = SCRIPT_DIR / "bird_db_links.json"
 DEFAULT_OUTPUT_PATH = SCRIPT_DIR / "bird_fact_db_pi.json"
 CANNOT_FIND_FACT = "I cannot find a fact."
+ANSI_ESCAPE_RE = re.compile(r"\x1b(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]|\].*?(?:\x07|\x1b\\))")
+CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -40,11 +40,9 @@ def load_json(path: Path) -> dict[str, Any]:
 def load_existing_facts(path: Path) -> dict[str, dict[str, Any]]:
     """Load the current fact database, returning an empty database if it is absent."""
     try:
-        data = load_json(path)
+        return load_json(path)
     except FileNotFoundError:
         return {}
-
-    return data
 
 
 def save_fact_database(path: Path, fact_db: dict[str, dict[str, Any]]) -> None:
@@ -53,7 +51,7 @@ def save_fact_database(path: Path, fact_db: dict[str, dict[str, Any]]) -> None:
     tmp_path = path.with_suffix(path.suffix + ".tmp")
 
     with tmp_path.open("w") as f:
-        json.dump(fact_db, f, indent=2)
+        json.dump(fact_db, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
     tmp_path.replace(path)
@@ -88,7 +86,8 @@ def build_pi_prompt(bird_name: str) -> str:
     return (
         f"Find one fun fact about the bird species {bird_name}. "
         f"Make sure the fact is specifically about {bird_name}, not just its genus, "
-        "family, lookalikes, or birds in general. Verify that the fact belongs to "
+        "family, lookalikes, or birds in general. Use a minimal number of searches to extract the fact. "
+        "Be efficient. Verify that the fact belongs to "
         "this exact species. If it does not, or you cannot verify it, respond with "
         f"exactly: {CANNOT_FIND_FACT}\n\n"
         "Response style: you are a whacky, zany bird expert whose bird-loving "
@@ -103,6 +102,8 @@ def build_pi_prompt(bird_name: str) -> str:
 
 def clean_pi_response(text: str) -> str:
     """Normalize pi output while preserving the fact text itself."""
+    text = ANSI_ESCAPE_RE.sub("", text)
+    text = CONTROL_CHAR_RE.sub("", text)
     text = text.strip()
 
     if text.startswith("```") and text.endswith("```"):
@@ -130,7 +131,7 @@ def ask_pi_for_fact(bird_name: str, timeout: int) -> str | None:
 
     try:
         completed = subprocess.run(
-            ["pi", prompt],
+            ["pi", "--print", "--no-session", prompt],
             capture_output=True,
             check=False,
             text=True,
@@ -197,8 +198,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=180,
-        help="Seconds to wait for each pi call. Default: 180.",
+        default=600,
+        help="Seconds to wait for each pi call. Default: 600.",
     )
     return parser.parse_args()
 
@@ -217,10 +218,7 @@ def main() -> None:
 
     random.shuffle(species)
 
-    print(
-        f"Loaded {len(fact_db)} existing facts. "
-        f"Attempting {len(species)} species."
-    )
+    print(f"Loaded {len(fact_db)} existing facts. Attempting {len(species)} species.")
 
     for bird_name in tqdm(species, desc="Gathering agentic fun facts"):
         fact = ask_pi_for_fact(bird_name, args.timeout)
