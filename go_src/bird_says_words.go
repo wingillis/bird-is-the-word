@@ -343,7 +343,8 @@ func sendBirdMessage(client *twilio.RestClient, twilioNumber string, phoneNumber
 	params.SetTo(phoneNumber)
 	params.SetFrom(twilioNumber)
 	params.SetBody(fmt.Sprintf("%s\n%s", birdWord.Text, birdWord.Url))
-	params.SetMediaUrl([]string{birdWord.Img, videoURL})
+	params.SetMediaUrl([]string{videoURL})
+	// params.SetMediaUrl([]string{birdWord.Img, videoURL})
 
 	_, err := client.Api.CreateMessage(params)
 	return err
