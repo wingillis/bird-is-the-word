@@ -11,3 +11,6 @@ assets
 
 *.pyc
 __pycache__/
+
+bird_videos/
+bird_videos_originals_*/
